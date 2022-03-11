@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>物联网远程虚拟实验平台</title>
+	<meta name="keywords" content="index">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="../../../css/amazeui/amazeui.min.css" />
+	<link rel="stylesheet" href="../../../css/amazeui/amazeui.datatables.min.css" />
+	<link rel="stylesheet" href="../../../css/amazeui/app.css">
+	<link rel="stylesheet" href="../../../css/video/amazeui.videojs.css" />
+	<script src="../../../js/jquery/jquery.min.js"></script>
+</head>
+
+<body style="overflow-y: scroll">
+<script src="../../../js/amazeui/theme.js"></script>
+<div class="am-g tpl-g">
+	<!-- 头部 -->
+	<div id="head" th:replace="pages/student/common/head :: header"></div>
+	<!-- 内容区域 -->
+	<div class="tpl-content-wrapper active">
+		<div class="row">
+			<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+				<div class="widget am-cf">
+					<div class="widget-head am-cf">
+						<div class="widget-title am-fl">实验数据</div>
+					</div>
+
+					<div class="widget-body">
+						<div class="row  am-cf">
+							<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+								<div class="am-panel am-panel-primary">
+									<header class="am-panel-hd">
+										<h3 class="am-panel-title">实时数据区</h3>
+									</header>
+									<div class="am-panel-bd">
+										<div class="row  am-cf">
+											<div class="am-u-sm-12 am-u-md-6 am-u-lg-6">
+												<div class="am-form-group">
+													<div class="am-btn-toolbar">
+														<div class="am-btn-group am-btn-group-xs">
+															<button id="openPort" type="button" class="am-btn am-btn-primary" >端口批量打开</button>
+															<button id="closePort" type="button" class="am-btn am-btn-danger" >端口批量关闭</button>
+															<button id="back" type="button" class="am-btn am-btn-primary">返回</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row  am-cf">
+											<div class="am-u-sm-6 am-u-md-6 am-u-lg-6">
+												<div class="am-form">
+													<label class="am-checkbox-inline">
+														<input type="checkbox" name="node_number" >
+														<font color="#000000" class="nodename"></font>
+													</label>
+													<textarea rows="5" style="overflow:scroll;resize:none;cursor:auto" readonly></textarea>
+												</div>
+											</div>
+											<div class="am-u-sm-6 am-u-md-6 am-u-lg-6">
+												<div class="am-form">
+													<label class="am-checkbox-inline">
+														<input type="checkbox" name="node_number" >
+														<font color="#000000" class="nodename"></font>
+													</label>
+													<textarea rows="5" style="overflow:scroll;resize:none;cursor:auto" readonly></textarea>
+												</div>
+											</div>
+											<div class="am-u-sm-6 am-u-md-6 am-u-lg-6">
+												<div class="am-form">
+													<label class="am-checkbox-inline">
+														<input type="checkbox" name="node_number" >
+														<font color="#000000" class="nodename"></font>
+													</label>
+													<textarea rows="5" style="overflow:scroll;resize:none;cursor:auto" readonly></textarea>
+												</div>
+											</div>
+											<div class="am-u-sm-6 am-u-md-6 am-u-lg-6">
+												<div class="am-form">
+													<label class="am-checkbox-inline">
+														<input type="checkbox" name="node_number" >
+														<font color="#000000" class="nodename"></font>
+													</label>
+													<textarea rows="5" style="overflow:scroll;resize:none;cursor:auto" readonly></textarea>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row  am-cf">
+							<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+								<div class="am-panel am-panel-primary">
+									<header class="am-panel-hd">
+										<h3 class="am-panel-title">数据图表区</h3>
+									</header>
+									<div class="am-panel-bd">
+										<div class="row  am-cf">
+											<div class="am-u-sm-12 am-u-md-6 am-u-lg-6">
+												<div class="am-form-group">
+													<div class="am-btn-toolbar">
+														<div class="am-btn-group am-btn-group-xs">
+															<button id="showChart" type="button" class="am-btn am-btn-primary" >打开</button>
+															<button id="closeChart" type="button" class="am-btn am-btn-danger" >关闭</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									<div class="am-panel-bd">
+										<canvas width="1180px" height="300px" id="canvas" style="border: 1px solid rgb(68, 68, 68); border-image: none; cursor: default; background-color: rgb(41,36,33);"></canvas>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+<script src="../../../js/amazeui/amazeui.min.js"></script>
+<script src="../../../js/amazeui/amazeui.datatables.min.js"></script>
+<script src="../../../js/amazeui/dataTables.responsive.min.js"></script>
+<script src="../../../js/echart/echarts.js"></script>
+<script src="../../../js/amazeui/app.js"></script>
+<script src="../../../js/video/video.js"></script>
+<script src="../../../js/layer/layer.js"></script>
+<script src="../../../js/topo/jtopo-0.4.8-min.js"></script>
+<script src="../../../js/common.js"></script>
+<script src="../../../js/data.js"></script>
+<script>
+	var token = getQueryVariable("token");
+	var canvas = document.getElementById('canvas');
+	var stage = new JTopo.Stage(canvas); // 创建一个舞台对象
+	var scene = new JTopo.Scene(stage);
+	var links = [];//存储连线
+	var nodes = [];//存储节点
+	var location_x = [100,300,100,300];//x坐标
+	var location_y = [60,60,200,200];//y坐标
+
+	//拓扑图
+	$('#showChart').on('click', function() {
+		//单选框 只能选择一个单选框
+		var str = $.getAllNodeNumber();
+		var root = $.getCheckBox();
+		if (root == "") {
+			layer.msg("请选择一个节点作为根节点");
+			return;
+		}
+		if(root.length > 4){
+			layer.msg("请选择一个节点作为根节点");
+			return;
+		}
+		if(chartInterval != ""){
+			layer.msg("请先关闭");
+			return;
+		}
+		g_showLoading();
+		$.initNode();
+		chartInterval = setInterval(function() {
+			$.ajax({
+				type: "get",
+				url: "/serial/getAdHocNet?node_numbers="+str+"&token="+token+"&root="+root,
+				success: function(res) {
+					if(res.data != null){
+						layer.closeAll();
+						if(links != null){
+							$.each(links,function(i,e){
+								//移除连线
+								scene.remove(links[i]);
+							});
+						}
+						links = [];
+						for(var key in res.data){
+							var from = null;
+							var to = null;
+							$.each(nodes,function(i,e){
+								if(nodes[i].num == key){
+									from = nodes[i].node;
+								}
+								if(nodes[i].num == res.data[key]){
+									to = nodes[i].node;
+								}
+							});
+							var link = new JTopo.Link(to, from); // 增加连线
+							link.lineWidth = 3; // 线宽
+							link.arrowsRadius = 15;
+							link.strokeColor = '0,250,0';
+							links.push(link);
+							scene.add(link);
+						}
+					}
+				},
+				error: function() {
+					layer.closeAll();
+				}
+			});
+		}, 1000);
+	});
+
+	//关闭表格
+	$('#closeChart').on('click', function() {
+		$.clearMyChartInterval();
+		layer.msg("关闭成功")
+	});
+
+	//返回页面
+	$('#back').on('click', function() {
+		location.href = "/student/startEx?token="+token;
+	});
+	//初始化虚拟节点
+	$.initNode = function(str) {
+		$("textarea").each(function (i, e) {
+			var d = {};
+			var node = $.newNode(location_x[i], location_y[i],e.getAttribute("id") );
+			d.num = e.getAttribute("id");
+			d.node = node;
+			nodes.push(d);
+		});
+	}
+	//创建节点
+	$.newNode = function(x,y,text) {
+		var node = new JTopo.CircleNode(text);
+		node.radius = 25;
+		node.fillColor = '0, 191, 255'; // 填充颜色
+		node.textPosition = 'Middle_Center';
+		node.alpha = 0.7;
+		node.setLocation(x, y);
+		scene.add(node);
+		return node;
+	}
+	$.getAllNodeNumber = function(x,y,text) {
+		var str = "";
+		$("[name='node_number']").each(function() {
+			// 当前复选框是否被选中
+			str = str + $(this).attr("value") + ",";
+
+		});
+		return str.substring(0, str.length - 1);
+	}
+
+</script>
+</body>
+</html>

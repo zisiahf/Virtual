@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的预约</title>
+    <script src="../../../js/jquery/jquery.min.js"></script>
+    <script src="../../../js/bootstrap/bootstrap.js"></script>
+    <script src="../../../js/layer/layer.js"></script>
+    <script src="../../../js/common.js"></script>
+    <link href="../../../css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="../../../css/style.css" rel="stylesheet">
+
+    <!-- 时间预约表-->
+    <script src="../../../js/timetable/Timetables.min.js"></script>
+    <link href="../../../css/timetable/timetable.css" rel="stylesheet">
+</head>
+<style>
+.form-group{
+    width:680px;
+
+}
+</style>
+<body>
+<!-- 1、头部 -->
+<div id="head" th:replace="pages/teacher/teacherHead :: header"></div>
+
+<!-- 2、预约栏目 -->
+<div id="order_list" class="col-md-8" style="background-color: #F0FFFF;width:920px;height:460px">
+    <div>
+        <!-- 2.1、预约展示和返回接口  -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#" aria-controls="home" role="tab" data-toggle="tab">添加预约</a>
+            </li>
+            <button class="btn btn-default" type="button" style="float: right; margin: 5px 20px 0 0" id="back">返回</button>
+        </ul>
+
+        <!-- 2.2、预约的实验板块  -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="home">
+                <div class="main_box">
+                    <div class="cont_box ">
+                        <!-- 2.2.1、 实验板块具体内容 -->
+                        <form class="form-horizontal" method="post" id="form_id">
+                            <input type="text" class="form-control" name="timeIndex" id="timeIndex" style="display:none">
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">实验名称</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="ex_name" placeholder="请输入实验名称" name="ex_name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">实验日期</label>
+                                <div class="col-sm-6">
+                                    <input type="date" class="form-control" name="orderdate" id="orderdate">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">实验时间</label>
+                                <div class="col-sm-6" >
+                                    <input type="text" class="form-control" id="exTime" name="exTime" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">实验选择</label>
+                                <div class="col-sm-6">
+                                    <select class="form-control" id="eid" name="eid"></select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">实验人数</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="people_number" placeholder="请输入实验人数" name="people_number" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label  class="col-sm-2 control-label">节点数量</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="node_number" disabled>
+                                </div>
+                            </div>
+
+
+                            <!-- 2.2.2、 预约实验的提交与重填 -->
+                            <div class="probtn_box clearfix">
+                                <input class="btn btn-default" type="button" id="submit" value="提交">
+                                <input class="btn btn-default" type="button" value="重填" id="reset">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- 2.3、 预约实验时间段的模态框弹窗 -->
+<div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" data-backdrop="">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">选择预约时间</h4>
+            </div>
+            <div class="modal-body">
+                <div id="coursesTable"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var token = getQueryVariable("token");
+    var count;//每个实验的节点数量
+    var d;
+
+    $.checkForm = function() {
+        var $ex_name=$("#ex_name").val();
+        var $orderdate=$("#orderdate").val();
+        var $people_number=$("#people_number").val();
+        var $eid=$("#eid").val();
+        var $node_number=$("#node_number").val();
+        var $timeIndex = $("#timeIndex").val();
+
+        if($ex_name=="" || $.trim($ex_name)==""){
+            layer.msg("实验名称不能为空");
+            return false;
+        }else if($orderdate=="" || $.trim($orderdate)==""){
+            layer.msg("实验日期不能为空");
+            return false;
+        }else if($eid==""){
+            layer.msg("请选择实验");
+            return false;
+        }else if($people_number=="" || $.trim($people_number)==""){
+            layer.msg("实验人数不能为空");
+            return false;
+        }
+        //判断数量是否满足
+        if($node_number >d[$timeIndex-1]){
+            layer.msg("你输入的人数已超出");
+            return false;
+        }
+        return true;
+    };
+
+
+    //页面初始化实验选择下拉框  显示预约信息 获取能够做的实验名称
+    $(document).ready(function() {
+        //从服务器获取实验选项
+        $.ajax({
+            type: "get",
+            url: "/student/getEx",
+            dataType: 'json',
+            success: function(res) {
+                $('#eid').html("");
+                $('#eid').append("<option value=\"\">请选择实验</option>");
+                var exList = res.data;
+                console.log(exList);
+                for(var i = 0; i < exList.length;i++){
+                    $('#eid').append("<option value=\""+exList[i].eid+"\" count=\""+exList[i].count+"\">"+exList[i].ex_name+"</option>");
+                }
+            },
+            error: function() {}
+        });
+
+    });
+
+    /* 提交 */
+    $('#submit').on('click', function() {
+
+        if($.checkForm()){
+            $("#exTime").attr("readonly",false);
+            $.post("/order/addOrder?token="+token,$("#form_id").serialize(),function(res) {
+                if (res.code == 0) {
+                    layer.msg("预约成功");
+                    location.href = "/order/startOrder?token=" + token;
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        }
+    });
+
+
+    //改变下拉选
+    $('#eid').on('change', function() {
+        var $eid=$(this).val();
+        //没有选择实验 则无法输入人数
+        if($eid != ""){
+            $("#people_number").attr("readonly",false);
+        }else{
+            $("#people_number").attr("readonly",true);
+        }
+        var c = $("option[value="+$eid+"]").attr("count");
+        if(c != ""){
+            count = parseInt(c,10);
+        }
+        //清空实验人数和节点数量
+        $('#people_number').val("");
+        $('#node_number').val("");
+    });
+
+
+    //实验人数的键盘事件
+    $('#people_number').on('keyup', function() {
+        $('#node_number').val($(this).val() * count);
+    });
+
+    var orderList = [
+        ['', '', '', '', '', '', '', '', '', '', '', '']
+    ];
+    var week = ['周一'];
+    var day = new Date().getDay();
+    var courseType = [
+        [{index: '1', name: '8:05-8:50'}, 1],
+        [{index: '2', name: '8:55-9:40'}, 1],
+        [{index: '3', name: '10:00-10:45'}, 1],
+        [{index: '4', name: '10:50-11:35'}, 1],
+        [{index: '5', name: '11:40-12:25'}, 1],
+        [{index: '6', name: '13:30-14:15'}, 1],
+        [{index: '7', name: '14:20:15:05'}, 1],
+        [{index: '8', name: '15:10-15:55'}, 1],
+        [{index: '9', name: '16:00-16:45'}, 1],
+        [{index: '10', name: '18:30-19:15'}, 1],
+        [{index: '11', name: '19:20-20:05'}, 1],
+        [{index: '12', name: '20:10-20:55'}, 1]
+    ];
+
+    //实例化
+    var Timetable = new Timetables({
+        el: '#coursesTable',
+        timetables: orderList,
+        week:week,
+        merge:false,
+        timetableType: courseType,
+        highlightWeek: day,
+        styles: {
+            palette: false,
+            Gheight: 50,
+            leftHandWidth:82,
+        }
+    });
+
+    //日期控件onchange事件 点击预约日期触发预约具体时间的模态框
+    $('#orderdate').on('change', function() {
+        var date = $(this).val();
+        console.log(date);
+        //从服务器获取当天预约情况
+        $.ajax({
+            type: "get",
+            url: '/order/getOrderByDate?date='+date,
+            dataType: 'json',
+            success: function(res) {
+                console.log(res);
+                console.log(orderList);
+                for(var i = 0; i < orderList[0].length;i++){
+                    if(res.data[i] == 0){
+                        orderList[0][i] = "不可预约";
+                    }else {
+                        orderList[0][i] = "可预约 剩余数量为"+res.data[i];
+                    }
+                }
+                d = res.data;
+
+               //结果直接封装 res.data
+                Timetable.setOption({
+                    timetables: orderList,
+                    week:[date],
+                    gridOnClick: function (e) {
+                        if(e.name.startsWith("不可预约")){
+                            alert("不可预约");
+                        }else{
+                            var time = $(".left-hand-"+e.index+" p.left-hand-name").html();
+                            $("#exTime").val(time);
+                            $("#timeIndex").val(e.index);
+                            $('#myModal').modal('hide');
+                        }
+                    }
+                });
+                for(var i = 0; i < orderList[0].length;i ++){
+                    if(orderList[0][i].startsWith("不可预约")){
+                        $(".stage_"+(i+1)).find("li").css("background-color","red");
+                        $(".stage_"+(i+1)).find("li").css("color","black");
+                    }
+                }
+            },
+            error: function() {}
+        });
+        $('#myModal').modal('show');
+    });
+
+    //重填
+    $('#reset').on('click', function() {
+        $("#ex_name").val("");
+        $("#orderdate").val("");
+        $("#exTime").val("");
+        $("#people_number").val("");
+        $("#eid").val("");
+        $("#tid").val("");
+        $("#timeIndex").val("");
+        $("#people_number").val("");
+        $("#node_number").val("");
+    });
+
+    //返回
+    $('#back').on('click', function() {
+        location.href="/order/startOrder?token=" + token;
+    });
+
+
+</script>
+</body>
+</html>

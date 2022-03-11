@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>物联网远程虚拟实验平台</title>
+	<meta name="keywords" content="index">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="Cache-Control" content="no-siteapp" />
+	<link rel="stylesheet" href="../../../css/amazeui/amazeui.min.css" />
+	<link rel="stylesheet" href="../../../css/amazeui/amazeui.datatables.min.css" />
+	<link rel="stylesheet" href="../../../css/amazeui/app.css">
+	<link rel="stylesheet" href="../../../css/video/amazeui.videojs.css" />
+	<script src="../../../js/jquery/jquery.min.js"></script>
+</head>
+
+<body style="overflow-y: scroll">
+<script src="../../../js/amazeui/theme.js"></script>
+<div class="am-g tpl-g">
+	<!-- 头部 -->
+	<!-- 头部 -->
+	<div id="head" th:replace="pages/student/common/head :: header"></div>
+	<!-- 内容区域 -->
+	<div class="tpl-content-wrapper active">
+		<div class="row">
+			<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+				<div class="widget am-cf">
+					<div class="widget-head am-cf">
+						<div class="widget-title am-fl">实验数据</div>
+					</div>
+
+					<div class="widget-body">
+						<div class="row  am-cf">
+							<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+								<div class="am-panel am-panel-primary">
+									<header class="am-panel-hd">
+										<h3 class="am-panel-title">实时数据区</h3>
+									</header>
+									<div class="am-panel-bd" id="do-not-say-2">
+										<div class="row  am-cf">
+											<div class="am-u-sm-12 am-u-md-6 am-u-lg-6">
+												<div class="am-form-group">
+													<div class="am-btn-toolbar">
+														<div class="am-btn-group am-btn-group-xs">
+															<button id="openPort" type="button" class="am-btn am-btn-primary" >端口批量打开</button>
+															<button id="closePort" type="button" class="am-btn am-btn-danger" >端口批量关闭</button>
+															<button id="back" type="button" class="am-btn am-btn-primary">返回</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="row  am-cf">
+											<div class="am-u-sm-6 am-u-md-6 am-u-lg-6">
+												<div class="am-form">
+													<label class="am-checkbox-inline">
+														<input type="checkbox" name="node_number" >
+														<font color="#000000" class="nodename"></font>
+													</label>
+													<textarea rows="5" style="overflow:scroll;resize:none;cursor:auto" readonly></textarea>
+												</div>
+											</div>
+											<div class="am-u-sm-6 am-u-md-6 am-u-lg-6">
+												<div class="am-form">
+													<label class="am-checkbox-inline">
+														<input type="checkbox" name="node_number" >
+														<font color="#000000" class="nodename"></font>
+													</label>
+													<textarea rows="5" style="overflow:scroll;resize:none;cursor:auto" readonly></textarea>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="../../../js/amazeui/amazeui.min.js"></script>
+<script src="../../../js/amazeui/amazeui.datatables.min.js"></script>
+<script src="../../../js/amazeui/dataTables.responsive.min.js"></script>
+<script src="../../../js/amazeui/app.js"></script>
+<script src="../../../js/video/video.js"></script>
+<script src="../../../js/layer/layer.js"></script>
+<script src="../../../js/common.js"></script>
+<script>
+	videojs.options.flash.swf = "video.js/video-js.swf";
+	//var interval = null;//计时器
+	var token = getQueryVariable("token");
+	//初始话页面 查询节点信息 节点号
+	$(document).ready(function() {
+		$.ajax({
+			type: "get",
+			url: "/student/getMessage?token=" + token,
+			dataType: 'json',
+			success: function(res) {
+				$("#welcome").html(res.data.username);
+				var node_number = res.data.node_number.split(",");
+				$.each(node_number, function(i, e) {
+					$("input[type='checkbox']")[i].setAttribute("value", e);
+					$(".nodename")[i].innerHTML= "节点"+e;
+					$("textarea")[i].setAttribute("id",e);
+				});
+			},
+			error: function() {}
+		});
+	});
+
+	$('#openPort').on('click', function() {
+		var str = $.getCheckBox()+"";
+		if (str == "") {
+			layer.msg("请选择节点");
+			return;
+		}
+		g_showLoading();
+		var node_numbers = str.split(",");
+		var len = node_numbers.length;
+		$.each(node_numbers,function (i,str) {
+			// 打开端口
+			$.ajax({
+				type : "get",
+				url : "/serial/openPort?node_number="+str,
+				success : function(res) {
+					if(res.data){
+						//打开端口成功 读取数据
+						if(i == len - 1){
+							layer.closeAll();
+							layer.msg("打开端口成功");
+						}
+						$.getDataByInterval(str);
+
+					}else{
+						//layer.closeAll();
+						layer.msg("打开端口失败，请检查未关闭的端口");
+					}
+				},
+				error : function(res) {
+					layer.closeAll();
+					layer.msg("系统异常");
+				}
+			});
+		});
+	});
+	$('#closePort').on('click', function() {
+		var str = $.getCheckBox();
+		if (str == "") {
+			layer.msg("请选择节点");
+			return;
+		}
+		var node_numbers = str.split(",");
+		var len = node_numbers.length;
+		$.each(node_numbers,function (i,str) {
+			//清除计时器
+			$.clearMyInterval(str);
+			$.ajax({
+				type : "get",
+				url : "/serial/closePort?node_number="+str,
+				success : function(res) {
+					if(res.data){
+						//$('#' + str).html("");
+						if(i == len - 1){
+							layer.msg("关闭端口成功");
+						}
+					}else{
+						layer.msg("关闭端口失败，请检查已打开的端口");
+					}
+				},
+				error : function(res) {
+					layer.msg("系统异常");
+				}
+			});
+		});
+	});
+	//每秒请求一次数据
+	$.getDataByInterval = function(str) {
+		$.clearMyInterval(str);
+		//生成新定时器
+		var interval = setInterval($.f = function(){$.getData(str)},1000);
+		//保存到标签属性内
+		$('#' + str).attr("interval",interval);
+	}
+	//向服务器端请求数据
+	$.getData = function(str) {
+		$.ajax({
+			type : "get",
+			url : "/serial/getSerialData?node_number="+str,
+			success : function(res) {
+				if(res.data == null){
+					return;
+				}
+				$('#' + str).html(res.data);
+				var height=$('#' + str)[0].scrollHeight;
+				$('#' + str).scrollTop(height);
+			}
+		});
+	}
+	$.clearMyInterval = function(str) {
+		//获取checkbox inteval 属性 存储定时器
+		var interval = $('#' + str).attr("interval");
+		if(interval != ""){//判断计时器是否为空
+			//清空定时器
+			clearInterval(interval);
+			$('#' + str).attr("interval","");
+		}
+	}
+	//返回页面
+	$('#back').on('click', function() {
+		location.href = "/student/startEx?token="+token;
+	});
+</script>
+</body>
+</html>

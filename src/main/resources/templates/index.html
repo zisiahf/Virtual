@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>实验列表</title>
+    <script src="../js/jquery/jquery.min.js"></script>
+    <script src="../js/bootstrap/bootstrap.js"></script>
+    <script src="../js/bootstrap/bootstrap-paginator.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="../../../js/md5.min.js"></script>
+    <script src="../../../js/layer/layer.js"></script>
+    <link href="../css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+</head>
+
+<body>
+<div align="center">
+    <div class="contest_nav banner_div" align="center">
+        <!-- 1、图片横幅 -->
+        <a href="/"><img src="../images/banner.png" width="100%" height="116px"></a>
+
+        <!-- 2、导航栏 -->
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Sensor Network Experiment Platform</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <button type="button" class="btn btn-default navbar-btn" data-toggle="modal"
+                                data-target="#myModal">注册</button>
+                        <button type="button" class="btn btn-default navbar-btn" id="teacherLogin">教师登录</button>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+
+        <!-- 3、实验列表 -->
+        <h1 class="h_test_list">实验列表</h1>
+        <table class="table table-striped table_div table-bordered">
+            <thead>
+            <tr>
+                <th>实验名称</th>
+                <th>实验日期</th>
+                <th>预约时间</th>
+                <th>教师姓名</th>
+                <th>工作单位</th>
+            </tr>
+            </thead>
+            <tbody id="body">
+            </tbody>
+        </table>
+
+        <!-- 4、数据分页右对齐 -->
+        <nav class="text-right">
+            <!--text-right 右对齐，bootstrap中样式-->
+            <ul class="pagination"></ul>
+        </nav>
+    </div>
+</div>
+
+
+<!-- 5、由注册按钮触发的教师弹窗 -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">教师账户注册</h4>
+            </div>
+
+            <!-- 5.1、添加教师信息弹出框   弹框主体表单 -->
+            <div class="modal-body">
+                <div class="main_box">
+                    <div class="cont_box">
+                        <form action="#" method="post" id="form_id">
+                            <ul class="addpro_box adduser_box">
+                                <li>
+                                    <label>用户名：</label>
+                                    <input class="input_add" type="text" placeholder="请输入用户名"
+                                           name="username" id="username"/>
+                                </li>
+                                <li>
+                                    <label>登录密码：</label>
+                                    <input type="password" class="input_add" placeholder="请输入密码"
+                                           name="password" id="password"/>
+                                </li>
+
+                                <li>
+                                    <label>姓名：</label>
+                                    <input class="input_add" type="text" placeholder="请输入姓名"
+                                           name="name" id="name"/>
+                                </li>
+                                <li>
+                                    <label>工作地：</label>
+                                    <input class="input_add" type="text" placeholder="请输入工作地"
+                                           name="workplace" id="workplace"/>
+                                </li>
+                            </ul>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- 5.2、弹框页脚 -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="teacherRegister">注册</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+</body>
+<script type="text/javascript">
+
+    //页面初始化
+    $(document).ready(function() {
+        //渲染数据
+        $.ajax({
+            type: "get",
+            url: "/list?pageNum=1",
+            dataType: 'json',
+            success: function(res) {
+                //渲染预约列表数据
+                $.appendHtml(res);
+                //设置页面参数
+                $.setPaginator(res);
+            },
+            error:function(){
+
+            }
+        });
+    });
+
+    //分页功能
+    $.setPaginator = function(res) {
+        //显示的页数
+        var curNumberOfPages = res.data.totalPages > 3 ? 3 : res.data.totalPages;
+        $('.pagination').bootstrapPaginator({
+            currentPage: res.data.pageNum, //当前页。
+            totalPages: res.data.totalPages, //总页数。
+            size: "normal", //页眉的大小。
+            bootstrapMajorVersion: 3, //bootstrap的版本要求。
+            alignment: "center",
+            numberOfPages: curNumberOfPages, //显示的页数
+            itemTexts: function(type, page, current) { //如下的代码是将页眉显示的中文显示我们自定义的中文。
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "末页";
+                    case "page":
+                        return page;
+                }
+            },
+            //给每个页眉绑定一个事件，其实就是ajax请求，其中page变量为当前点击的页上的数字。
+            onPageClicked: function(event, originalEvent, type, page) {
+                $.ajax({
+                    type: "get",
+                    url: "/list?pageNum="+page,
+                    dataType: 'json',
+                    success: function(res) {
+                        //渲染预约列表数据
+                        $.appendHtml(res);
+                    }
+                });
+            }
+        });
+    }
+
+    //渲染数据，学生选择实验进行登录
+    $.appendHtml = function(res) {
+        $('#body').html("");
+        var orderList = res.data.content;
+        for (var i = 0; i < orderList.length; i++) {
+            var href = '/student/toLogin?oid=' + orderList[i].oid;
+            $('#body').append("<tr><td><a href=" + href + ">" + orderList[i].ex_name + "</a></td><td>" + orderList[i].orderdate + "</td><td>" + orderList[i].exTime + "</td><td>" + orderList[i].teacherName + "</td><td>" + orderList[i].workplace + "</td></tr>");
+        }
+    }
+
+    // 已有账户教师登录
+    $('#teacherLogin').on('click', function() {
+        location.href="/teacher/toLogin";
+    });
+
+    // 未注册教师注册
+    $('#teacherRegister').on('click', function() {
+        if($.checkForm()){
+            var password = md5($("#password").val());
+            $("#password").val(password);
+            $.post("/teacher/teacherRegister",$("#form_id").serialize(),function(res){
+                if(res.code == 0){
+                    layer.msg(res.data);
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        }
+    });
+
+    // 校验表单
+    $.checkForm = function() {
+        var username=$("#username").val();
+        var password=$("#password").val();
+        var name=$("#name").val();
+        var workplace=$("#workplace").val();
+
+        if(username=="" || $.trim(username)==""){
+            layer.msg("用户名不能为空");
+            return false;
+        }else if(password=="" || $.trim(password)==""){
+            layer.msg("密码不能为空");
+            return false;
+        }else if(name=="" || $.trim(name)==""){
+            layer.msg("姓名不能为空");
+            return false;
+        }else if(workplace=="" || $.trim(workplace)==""){
+            layer.msg("工作地不能为空");
+            return false;
+        }
+        return true;
+    };
+
+
+</script>
+</html>

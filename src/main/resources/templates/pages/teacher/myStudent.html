@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的预约</title>
+    <script src="../../../js/jquery/jquery.min.js"></script>
+    <script src="../../../js/bootstrap/bootstrap.js"></script>
+    <script src="../../../js/bootstrap/bootstrap-paginator.js"></script>
+    <script src="../../../js/layer/layer.js"></script>
+    <script src="../../../js/common.js"></script>
+    <script src="../../../js/md5.min.js"></script>
+    <link href="../../../css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="../../../css/style.css" rel="stylesheet">
+
+    <!-- 时间预约表-->
+    <script src="../../../js/timetable/Timetables.min.js"></script>
+    <link href="../../../css/timetable/timetable.css" rel="stylesheet">
+
+</head>
+<style>
+.form-group{
+    width:680px;
+}
+</style>
+<body>
+<!-- 1、头部 -->
+<div id="head" th:replace="pages/teacher/teacherHead :: header"></div>
+
+
+<!-- 2、学生列表模块 -->
+<div id="order_list" class="col-md-8" style="background-color: #F0FFFF;height:100%">
+    <div>
+        <!--  2.1、修改预约和学生列表接口  -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" id="editOrder"><a  aria-controls="home" role="tab" data-toggle="tab">修改预约</a>
+            </li>
+            <li role="presentation" class="active"><a href="#" aria-controls="profile" role="tab" data-toggle="tab">学生列表</a>
+            </li>
+        </ul>
+
+        <!-- 2.2、添加学生过程：单个添加和批量添加 -->
+        <div role="tabpanel" class="tab-pane active" id="profile">
+            <!-- 添加学生的过程 -->
+            <div class="space">
+                <!-- 2.2.1、 单个添加和批量添加接口 -->
+                <ul style="float: right">
+                    <input class="btn btn-default" type="button" value="添加学生" data-toggle="modal"
+                           data-target="#myModal2">
+                    <input class="btn btn-default" type="button" value="批量添加" data-toggle="modal"
+                           data-target="#myModal3">
+                </ul>
+
+                <!-- 2.2.2、 单个添加学生信息弹出框 -->
+                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <!-- 添加学生信息弹出框header部分  -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">添加学生信息</h4>
+                            </div>
+
+                            <!-- 添加学生信息弹出框body部分  -->
+                            <div class="modal-body">
+                                <div class="main_box">
+                                    <div class="cont_box">
+                                        <form action="#" method="post" id="form_id">
+                                            <ul class="addpro_box adduser_box">
+                                                <li>
+                                                    <label>用户名：</label>
+                                                    <input class="input_add" type="text" placeholder="请输入用户名"
+                                                           name="username" id="username"/>
+                                                </li>
+                                                <li>
+                                                    <label>登录密码：</label>
+                                                    <input type="password" class="input_add" placeholder="请输入密码"
+                                                           name="password" id="password"/>
+                                                </li>
+
+                                                <li>
+                                                    <label>姓名：</label>
+                                                    <input class="input_add" type="text" placeholder="请输入姓名"
+                                                           name="name" id="name"/>
+                                                </li>
+                                                <li>
+                                                    <label>学校：</label>
+                                                    <input class="input_add" type="text" placeholder="请输入学校"
+                                                           name="school" id="school"/>
+                                                </li>
+                                                <li>
+                                                    <label>专业：</label>
+                                                    <input class="input_add" type="text" placeholder="请输入专业"
+                                                           name="major" id="major"/>
+                                                </li>
+                                            </ul>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 添加学生信息弹出框footer部分  -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="addStudent">添加</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 2.2.3、 批量添加学生信息弹出框 -->
+                <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel3">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+
+                            <!-- 批量添加弹出框header部分-->
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="myModalLabel2">添加学生信息</h4>
+                            </div>
+
+                            <!-- 批量添加弹出框body部分 -->
+                            <div class="modal-body">
+                                <div class="main_box">
+                                    <div class="cont_box">
+                                        <div class="alert alert-warning" role="alert">
+                                            <p>说明</p>
+                                            <p>（1）请<b>下载模板</b>批量添加学生信息</p>
+                                            <p>（2）确认信息无误后，请点击<b>上传</b>来将信息传入后台</p>
+                                            <p>（3）重复的学生信息将被自动过滤</p>
+                                        </div>
+                                        <form enctype="multipart/form-data" action="" method="post">
+                                            <div>
+                                                <label for="InputFile">选择文件</label>
+                                                <input type="file" id="InputFile">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 批量添加弹出框footer部分 -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="upload">上传</button>
+                                <button type="button" class="btn btn-default" id="download">模板下载</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--2.3、添加的学生的回显过程 -->
+            <div>
+                <div class="cont_box">
+                    <table border="0" cellspacing="0" cellpadding="0" class="table" id="table_box">
+                        <thead>
+                        <!-- 学生信息表的表名 -->
+                        <tr>
+                            <th>用户名</th>
+                            <th>姓名</th>
+                            <th>学校</th>
+                            <th>专业</th>
+                            <th width="200px">操作</th>
+                        </tr>
+                        </thead>
+
+                        <!-- 学生信息表的数据部分  -->
+                        <tbody id="body">
+                        </tbody>
+
+                    </table>
+
+                    <!-- 2.4、分页情况 -->
+                    <nav class="text-right">
+                        <!--text-right 右对齐，bootstrap中样式-->
+                        <ul class="pagination"></ul>
+                    </nav>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var token = getQueryVariable("token");
+    var oid = getQueryVariable("oid");
+    var formdata = new FormData(); //表单数据
+
+    //页面初始化 显示预约信息
+    $(document).ready(function() {
+        // 加载某老师预约的某实验下的学生数据
+        $.ajax({
+            type: "get",
+            url: "/user/getUserByTidAndOid?pageNum=1&token="+token+"&oid="+oid,
+            dataType: 'json',
+            success: function(res) {
+                //渲染预约列表数据
+                $.appendHtml(res);
+                //设置页面参数
+                $.setPaginator(res);
+            },
+            error:function(){
+
+            }
+        });
+    });
+
+    //分页功能
+    $.setPaginator = function(res) {
+        //显示的页数
+        var curNumberOfPages = res.data.totalPages > 3 ? 3 : res.data.totalPages;
+        $('.pagination').bootstrapPaginator({
+            currentPage: res.data.pageNum, //当前页。
+            totalPages: res.data.totalPages, //总页数。
+            size: "normal", //页眉的大小。
+            bootstrapMajorVersion: 3, //bootstrap的版本要求。
+            alignment: "center",
+            numberOfPages: curNumberOfPages, //显示的页数
+            itemTexts: function(type, page, current) { //如下的代码是将页眉显示的中文显示我们自定义的中文。
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "末页";
+                    case "page":
+                        return page;
+                }
+            },
+            //给每个页眉绑定一个事件，其实就是ajax请求，其中page变量为当前点击的页上的数字。
+            onPageClicked: function(event, originalEvent, type, page) {
+                $.ajax({
+                    type: "get",
+                    url: "/user/getUserByTidAndOid?pageNum="+page+"&token="+token+"&oid="+oid,
+                    dataType: 'json',
+                    success: function(res) {
+                        //渲染预约列表数据
+                        $.appendHtml(res);
+                    }
+                });
+            }
+        });
+    }
+
+
+    //渲染数据 这个函数没看懂
+    $.appendHtml = function(res) {
+        //清空之前数据
+        $('#body').html("");
+        //渲染添加我的预约href
+        //$('#toAddOrder').attr("href","/order/toAddOrder?token="+token);
+        var studentList = res.data.content;
+        for (var i = 0; i < studentList.length; i++) {
+            //var href = '/student/toLogin?oid=' + orderList[i].oid;
+            $('#body').append("<tr>\n" +
+                "                                <td>"+studentList[i].username+"</td>\n" +
+                "                                <td>"+studentList[i].name+"</td>\n" +
+                "                                <td>"+studentList[i].school+"</td>\n" +
+                "                                <td>"+studentList[i].major+"</td>\n" +
+                "                                <td>\n" +
+                "                                    <a href=\"\" class=\"table_btn table_info detail_btn\">\n" +
+                "                                        <i class=\"fa fa-eye\"></i>\n" +
+                "                                        <span>查看</span>\n" +
+                "                                    </a>\n" +
+                "                                    <a onclick=\"deleteStudent('"+studentList[i].sid+"')\" class=\"table_btn table_del del_btn\">\n" +
+                "                                        <i class=\"fa fa-trash-o\"></i>\n" +
+                "                                        <span>删除</span>\n" +
+                "                                    </a>\n" +
+                "                                </td>\n" +
+                "                            </tr>");
+        }
+    }
+
+    //修改预约接口： 跳转回修改预约界面
+    $('#editOrder').on('click', function() {
+        location.href="/order/toEditOrder?oid="+oid+"&token="+token;
+    });
+
+    // 查看学生的代码师兄还没有实现
+
+
+    //删除学生
+    function deleteStudent(sid) {
+        if(confirm('确实要删除该学生吗?')) {
+            $.get("/user/deleteStudentBySidAndOidAndTid?sid="+sid+"&oid="+oid+"&token="+token,function(res){
+                if(res.code==0){
+                    layer.msg(res.data);
+                    location.href="/user/toAddUser?token="+token+"&oid="+oid;
+                }else {
+                    layer.msg("删除失败")
+                }
+            });
+        }
+    }
+
+    //添加学生
+    $('#addStudent').on('click', function() {
+        if($.checkForm()){
+            $.post("/user/addStudent?oid="+oid+"&token="+token,$("#form_id").serialize(),function(res){
+                if(res.code==0){
+                    layer.msg(res.data);
+                    location.href="/user/toAddUser?token="+token+"&oid="+oid;
+                }else{
+                    layer.msg(res.msg);
+                }
+
+            });
+        }
+    });
+
+    //校验表单
+    $.checkForm = function() {
+        var username=$("#username").val();
+        var password=$("#password").val();
+        var name=$("#name").val();
+        var school=$("#school").val();
+        var major=$("#major").val();
+
+        if(username=="" || $.trim(username)==""){
+            layer.msg("用户名不能为空");
+            return false;
+        }else if(password=="" || $.trim(password)==""){
+            layer.msg("密码不能为空");
+            return false;
+        }else if(name=="" || $.trim(name)==""){
+            layer.msg("姓名不能为空");
+            return false;
+        }else if(school=="" || $.trim(school)==""){
+            layer.msg("学校不能为空");
+            return false;
+        }else if(major=="" || $.trim(major)==""){
+            layer.msg("专业不能为空");
+            return false;
+        }
+        return true;
+    };
+
+
+    //上传文件
+    $('#upload').on('click', function() {
+        var file = $("#InputFile")[0].files[0];
+        if(file == null){
+            layer.msg("请选择文件");
+            return;
+        }
+        var formdata=new FormData();
+        formdata.append("file",file);
+        //上传文件ajax
+        g_showLoading();
+        $.ajax({
+            url: '/user/uploadStudent?oid='+oid+"&token="+token,
+            type: 'POST',
+            dataType: 'json',
+            data: formdata,
+            cache: false, //上传文件无需缓存
+            processData: false, //用于对data参数进行序列化处理 这里必须false
+            contentType: false, //必须
+            success: function(res) {
+                if(res.code == 0){
+                    layer.closeAll();
+                    location.href="/user/toAddUser?token="+token+"&oid="+oid;
+                    layer.msg(res.data);
+                }else{
+                    layer.closeAll();
+                    layer.msg(res.msg);
+                }
+
+            },
+            error: function(res) {
+                layer.closeAll();
+            }
+        });
+    });
+
+    //下载模板
+    $('#download').on('click', function() {
+        location.href = "/user/download";
+    })
+</script>
+</body>
+</html>

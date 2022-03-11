@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的预约</title>
+    <script src="../../../js/jquery/jquery.min.js"></script>
+    <script src="../../../js/bootstrap/bootstrap.js"></script>
+    <script src="../../../js/bootstrap/bootstrap-paginator.js"></script>
+    <script src="../../../js/layer/layer.js"></script>
+    <script src="../../../js/common.js"></script>
+    <link href="../../../css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="../../../css/style.css" rel="stylesheet">
+    <link href="../../../css/login.css" rel="stylesheet">
+</head>
+
+<body>
+<!-- 1、头部 -->
+<div id="head" th:replace="pages/teacher/teacherHead :: header"></div>
+
+<!-- 2、该教师预约的实验  -->
+<div id="order_list" class="col-md-10" style="background-color: #F0FFFF;height:100%">
+    <!-- 2.1、已预约的实验列表展示以及提供添加预约接口  -->
+    <div>
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="#">我的预约</a></li>
+            <a type="button" class="btn btn-default" style="float: right;margin: 5px 20px 0 0" id="toAddOrder">添加预约</a>
+        </ul>
+    </div>
+
+    <!-- 2.2、已预约实验详情 -->
+    <div class="form-group col-md-4 space" style="padding-left:0px;margin-left:0px">
+        <input type="text" class="form-control" placeholder="Search" style="display:none">
+    </div>
+    <div class="cont_box">
+        <table border="0" cellspacing="0" cellpadding="0" class="table" id="table_box">
+            <thead>
+            <tr>
+                <th>实验名称</th>
+                <th>实验日期</th>
+                <th>实验时间</th>
+                <th>实验人数</th>
+                <th>创建时间</th>
+                <th width="200">操作</th>
+            </tr>
+            </thead>
+            <tbody id="body">
+            </tbody>
+        </table>
+
+        <!-- 2.3、分页情况 -->
+        <nav class="text-right">
+            <!--text-right 右对齐，bootstrap中样式-->
+            <ul class="pagination"></ul>
+        </nav>
+    </div>
+
+</div>
+
+<script>
+    /* token为url传递的参数 */
+    var token = getQueryVariable("token");
+    console.log(token);
+
+    //页面初始化 显示预约信息
+    $(document).ready(function() {
+        //渲染数据
+        $.ajax({
+            type: "get",
+            url: "/order/getMyOrderList?pageNum=1&token="+token,
+            dataType: 'json',
+            success: function(res) {
+                //渲染预约列表数据
+                $.appendHtml(res);
+                //设置页面参数
+                $.setPaginator(res);
+            },
+            error:function(){
+
+            }
+        });
+    });
+
+    //分页功能
+    $.setPaginator = function(res) {
+        //显示的页数
+        var curNumberOfPages = res.data.totalPages > 3 ? 3 : res.data.totalPages;
+        $('.pagination').bootstrapPaginator({
+            currentPage: res.data.pageNum, //当前页。
+            totalPages: res.data.totalPages, //总页数。
+            size: "normal", //页眉的大小。
+            bootstrapMajorVersion: 3, //bootstrap的版本要求。
+            alignment: "center",
+            numberOfPages: curNumberOfPages, //显示的页数
+            itemTexts: function(type, page, current) { //如下的代码是将页眉显示的中文显示我们自定义的中文。
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "末页";
+                    case "page":
+                        return page;
+                }
+            },
+            //给每个页眉绑定一个事件，其实就是ajax请求，其中page变量为当前点击的页上的数字。
+            onPageClicked: function(event, originalEvent, type, page) {
+                $.ajax({
+                    type: "get",
+                    url: "/order/getMyOrderList?pageNum="+page+"&token="+token,
+                    dataType: 'json',
+                    success: function(res) {
+                        //渲染预约列表数据
+                        $.appendHtml(res);
+                    }
+                });
+            }
+        });
+    }
+
+
+    //渲染数据
+    $.appendHtml = function(res) {
+        //清空之前数据
+        $('#body').html("");
+
+        //渲染添加我的预约href
+        $('#toAddOrder').attr("href","/order/toAddOrder?token="+token);
+
+        var orderList = res.data.content;
+        for (var i = 0; i < orderList.length; i++) {
+            //var href = '/student/toLogin?oid=' + orderList[i].oid;
+            $('#body').append("<tr><td>"+orderList[i].ex_name+"</td><td>"+orderList[i].orderdate+"</td><td>" + orderList[i].exTime + "</td><td>" + orderList[i].people_number + "</td><td>" + orderList[i].createTime + "</td><td>\n" +
+                "<a href=\"/order/toEditOrder?oid="+orderList[i].oid+"&token="+token+"\" class=\"table_btn table_edit edit_btn\">\n" +
+                "    <i class=\"fa fa-edit\"></i>\n" +
+                "        <span>管理</span>\n" +
+                "</a>\n" +
+                "<a onclick=\"deleteOrder('"+orderList[i].oid+"')\" class=\"table_btn table_del del_btn\">\n" +
+                "    <i class=\"fa fa-trash-o\"></i>\n" +
+                "        <span>删除</span>\n" +
+                "</a></td></tr>");
+        }
+    }
+
+
+    //删除预约
+    function deleteOrder(oid) {
+        if(confirm('确实要删除该预约吗?(删除预约会删除该预约下所有学生)')) {
+            $.get("/order/deleteOrder?oid="+oid,function(res){
+                if(res.code== 0){
+                    layer.msg(res.data);
+                    location.href="/order/startOrder?token=" + token;
+                }
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

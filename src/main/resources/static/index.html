@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>实验列表</title>
+    <script src="js/jquery/jquery.min.js"></script>
+    <script src="js/bootstrap/bootstrap.js"></script>
+    <script src="js/bootstrap/bootstrap-paginator.js"></script>
+    <script src="js/common.js"></script>
+    <link href="css/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+<div align="center">
+    <div class="contest_nav banner_div" align="center">
+        <a href="/"><img src="../images/banner.png" width="100%" height="116px"></a>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Sensor Network Experiment Platform</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <button type="button" class="btn btn-default navbar-btn" onclick="teacherLoginUI()">注册</button>
+                        <button type="button" class="btn btn-default navbar-btn" onclick="teacherLoginUI()">教师登录</button>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+
+        <h1 class="h_test_list">实验列表</h1>
+        <table class="table table-striped table_div table-bordered">
+            <thead>
+            <tr>
+                <th>实验名称</th>
+                <th>实验日期</th>
+                <th>预约时间</th>
+                <th>教师姓名</th>
+                <th>工作单位</th>
+            </tr>
+            </thead>
+            <tbody id="body">
+            </tbody>
+        </table>
+        <nav class="text-right">
+            <!--text-right 右对齐，bootstrap中样式-->
+            <ul class="pagination"></ul>
+        </nav>
+    </div>
+</div>
+</body>
+
+<script type="text/javascript">
+    //页面初始化
+    $(document).ready(function() {
+        //渲染数据
+        $.ajax({
+            type: "get",
+            url: "/list?pageNum=1",
+            dataType: 'json',
+            success: function(res) {
+                //渲染预约列表数据
+                $.appendHtml(res);
+                //设置页面参数
+                $.setPaginator(res);
+            },
+            error:function(){
+
+            }
+        });
+    });
+    //分页功能
+    $.setPaginator = function(res) {
+        //显示的页数
+        var curNumberOfPages = res.data.totalPages > 3 ? 3 : res.data.totalPages;
+        $('.pagination').bootstrapPaginator({
+            currentPage: res.data.pageNum, //当前页。
+            totalPages: res.data.totalPages, //总页数。
+            size: "normal", //页眉的大小。
+            bootstrapMajorVersion: 3, //bootstrap的版本要求。
+            alignment: "center",
+            numberOfPages: curNumberOfPages, //显示的页数
+            itemTexts: function(type, page, current) { //如下的代码是将页眉显示的中文显示我们自定义的中文。
+                switch (type) {
+                    case "first":
+                        return "首页";
+                    case "prev":
+                        return "上一页";
+                    case "next":
+                        return "下一页";
+                    case "last":
+                        return "末页";
+                    case "page":
+                        return page;
+                }
+            },
+            //给每个页眉绑定一个事件，其实就是ajax请求，其中page变量为当前点击的页上的数字。
+            onPageClicked: function(event, originalEvent, type, page) {
+                $.ajax({
+                    type: "get",
+                    url: "/list?pageNum="+page,
+                    dataType: 'json',
+                    success: function(res) {
+                        //渲染预约列表数据
+                        $.appendHtml(res);
+                    }
+                });
+            }
+        });
+    }
+    //渲染数据
+    $.appendHtml = function(res) {
+        $('#body').html("");
+        var orderList = res.data.content;
+        for (var i = 0; i < orderList.length; i++) {
+            var href = '/student/toLogin?oid=' + orderList[i].oid;
+            $('#body').append("<tr><td><a href=" + href + ">" + orderList[i].ex_name + "</a></td><td>" + orderList[i].orderdate + "</td><td>" + orderList[i].startTime + "-" + orderList[i].endTime + "</td><td>" + orderList[i].teacherName + "</td><td>" + orderList[i].workplace + "</td></tr>");
+        }
+    }
+</script>
+
+</html>

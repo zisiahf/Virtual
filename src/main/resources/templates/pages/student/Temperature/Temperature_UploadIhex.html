@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>物联网远程虚拟实验平台</title>
+		<meta name="keywords" content="index">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" href="../../../css/amazeui/amazeui.min.css" />
+		<link rel="stylesheet" href="../../../css/amazeui/amazeui.datatables.min.css" />
+		<link rel="stylesheet" href="../../../css/amazeui/app.css">
+		<link rel="stylesheet" href="../../../css/video/amazeui.videojs.css" />
+		<script src="../../../js/jquery/jquery.min.js"></script>
+		<script src="../../../js/amazeui/echarts.js"></script>
+	</head>
+
+	<body style="overflow-y: scroll">
+		<script src="../../../js/amazeui/theme.js"></script>
+		<div class="am-g tpl-g">
+			<!-- 1、头部 -->
+			<div id="head" th:replace="pages/student/common/head :: header"></div>
+
+			<!-- 2、数据可视化模块  -->
+			<div class="tpl-content-wrapper active">
+				<div class="row">
+					<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+						<div class="widget am-cf">
+
+							<!-- 2.1、数据可视化模块整体标题——我的节点 -->
+							<div class="widget-head am-cf">
+								<div class="widget-title am-fl">我的节点</div>
+							</div>
+
+							<div class="widget-body">
+								<!-- 整体是一个表单的形式 -->
+								<form class="am-form tpl-form-border-form tpl-form-border-br" id="form" enctype="multipart/form-data" method="post">
+
+									<div class="am-form-group">
+										<label for="node-select" class="am-u-sm-2 am-form-label">选择节点<span class="tpl-form-line-small-title"> Node</span></label>
+
+										<!-- 2.2.1 左边节点视频接口 -->
+										<div class="am-u-sm-5 am-u-md-5 am-u-lg-5">
+											<div class="am-form-group">
+												<div class="am-panel am-panel-secondary">
+													<header class="am-panel-hd">
+														<h3 class="am-panel-title">
+															<label class="am-checkbox-inline">
+																<input type="checkbox" name="node_number" data-am-ucheck><span class="checkbox"></span>
+															</label>
+															<i class="am-icon-bars am-fr" data-am-collapse="{target: '#do-not-say-1'}"></i>
+														</h3>
+													</header>
+
+													<div id="do-not-say-1" class="am-panel-collapse am-collapse am-in">
+														<div class="am-panel-bd" style="width: 756px; height: 600px;">
+															<iframe src="http://localhost:5000/ckplayer-master/sample/rtmp.html" height="100%" width="100%" frameborder="0" scrolling="no" allowfullscreen>
+
+															</iframe>
+															<!--<video id="example_video_1" class="video-js vjs-amazeui" controls preload="none" height="200" width="100%" poster="http://video-js.zencoder.com/oceans-clip.png" data-setup="{}">
+															  <source src="rtmp://player.daniulive.com:1935/vex" type='video/mp4' />
+															  <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />
+															  <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
+															  <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+															</video>-->
+														</div>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+										<!-- 2.2.2 右边节点视频接口 -->
+										<div class="am-u-sm-5 am-u-md-5 am-u-lg-5">
+											<div class="am-form-group">
+												<div class="am-panel am-panel-secondary">
+													<header class="am-panel-hd">
+														<h3 class="am-panel-title">
+															<label class="am-checkbox-inline">
+																<input type="checkbox" name="node_number" data-am-ucheck><span class="checkbox"></span>
+															</label>
+															<i class="am-icon-bars am-fr" data-am-collapse="{target:'#do-not-say-2'}"></i>
+														</h3>
+													</header>
+													<div id="do-not-say-2" class="am-panel-collapse am-collapse am-in">
+														<div class="am-panel-bd" style="width: 756px; height: 600px;">
+															<iframe src="http://localhost:5000/ckplayer-master/sample/rtmp.html" height="100%" width="100%" frameborder="0" scrolling="no" allowfullscreen>
+
+															</iframe>
+															<!-- 师兄的 id=example_video_1 -->
+															<!--<video id="example_video_2" class="video-js vjs-amazeui" controls preload="none" height="200" width="100%" poster="http://video-js.zencoder.com/oceans-clip.png" data-setup="{}">
+															  <source src="rtmp://player.daniulive.com:1935/vex" type='video/mp4' />
+															  <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />
+															  <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
+															  <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+															</video>-->
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<!-- 2.3、ihex文件下载 -->
+									<div class="am-form-group">
+										<label for="user-name" class="am-u-sm-2 am-form-label"> 选择文件<span class="tpl-form-line-small-title"> File</span></label>
+										<div class="am-u-sm-10">
+											<div class="am-form-group am-form-file">
+												<button type="button" class="am-btn am-btn-danger am-btn-sm">
+    											<i class="am-icon-cloud-upload"></i>选择要上传的ihex文件</button>&nbsp;&nbsp;&nbsp;<span id="file-list"></span>
+												<input id="file" type="file" name="file">
+												<label id="fileState"></label>
+											</div>
+
+										</div>
+									</div>
+
+									<!-- 2.4、下载、清空、查看数据的接口 -->
+									<div class="am-form-group">
+										<div class="am-u-sm-6 am-u-sm-push-2">
+											<button type="button" class="am-btn am-btn-primary" id="uploadIhex">下载</button>&nbsp;&nbsp;
+											<button type="button" class="am-btn am-btn-primary" id="clear">清空</button>&nbsp;&nbsp;
+											<button type="button" class="am-btn am-btn-primary" id="toGetData">查看数据</button>
+										</div>
+									</div>
+
+								</form>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../js/amazeui/amazeui.min.js"></script>
+		<script src="../../../js/amazeui/amazeui.datatables.min.js"></script>
+		<script src="../../../js/amazeui/dataTables.responsive.min.js"></script>
+		<script src="../../../js/amazeui/app.js"></script>
+		<script src="../../../js/video/video.js"></script>
+		<script src="../../../js/layer/layer.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script src="../../../js/upload.js"></script>
+
+
+	<script>
+		//跳转到数据页面
+		$('#toGetData').on('click', function() {
+			location.href="/student/toGetData?token="+token;
+		});
+
+
+
+	</script>
+
+	</body>
+</html>

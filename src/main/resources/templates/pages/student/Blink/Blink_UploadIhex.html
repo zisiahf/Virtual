@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>物联网远程虚拟实验平台</title>
+		<meta name="keywords" content="index">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" href="../../../css/amazeui/amazeui.min.css" />
+		<link rel="stylesheet" href="../../../css/amazeui/amazeui.datatables.min.css" />
+		<link rel="stylesheet" href="../../../css/amazeui/app.css">
+		<link rel="stylesheet" href="../../../css/video/amazeui.videojs.css" />
+		<script src="../../../js/jquery/jquery.min.js"></script>
+		<script src="../../../js/amazeui/echarts.js"></script>
+	</head>
+
+	<body style="overflow-y: scroll">
+		<script src="../../../js/amazeui/theme.js"></script>
+		<div class="am-g tpl-g">
+			<!-- 头部 -->
+			<div id="head" th:replace="pages/student/common/head :: header"></div>
+
+			<!-- 内容区域 -->
+			<div class="tpl-content-wrapper active">
+				<div class="row">
+					<div class="am-u-sm-12 am-u-md-12 am-u-lg-12">
+						<div class="widget am-cf">
+							<div class="widget-head am-cf">
+								<div class="widget-title am-fl">我的节点</div>
+							</div>
+
+							<div class="widget-body">
+								<form class="am-form tpl-form-border-form tpl-form-border-br" id="form" enctype="multipart/form-data" method="post">
+
+									<div class="am-form-group">
+										<label for="node-select" class="am-u-sm-2 am-form-label">选择节点<span class="tpl-form-line-small-title"> Node</span></label>
+										<div class="am-u-sm-5 am-u-md-5 am-u-lg-5">
+											<div class="am-form-group">
+												<div class="am-panel am-panel-secondary">
+													<header class="am-panel-hd">
+														<h3 class="am-panel-title">
+															<label class="am-checkbox-inline">
+																<input type="checkbox" name="node_number" data-am-ucheck><span class="checkbox"></span>
+															</label>
+															<i class="am-icon-bars am-fr" data-am-collapse="{target: '#do-not-say-1'}"></i>
+														</h3>
+													</header>
+													<div id="do-not-say-1" class="am-panel-collapse am-collapse am-in">
+														<div class="am-panel-bd">
+															<video id="example_video_1" class="video-js vjs-amazeui" controls preload="none" height="200" width="100%" poster="http://video-js.zencoder.com/oceans-clip.png" data-setup="{}">
+															  <source src="rtmp://player.daniulive.com:1935/vex" type='video/mp4' />
+															  <source src="http://video-js.zencode	r.com/oceans-clip.webm" type='video/webm' />
+															  <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
+															  <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+															</video>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="am-u-sm-5 am-u-md-5 am-u-lg-5">
+											<div class="am-form-group">
+												<div class="am-panel am-panel-secondary">
+													<header class="am-panel-hd">
+														<h3 class="am-panel-title">
+															<label class="am-checkbox-inline">
+																<input type="checkbox" name="node_number" data-am-ucheck><span class="checkbox"></span>
+															</label>
+															<i class="am-icon-bars am-fr" data-am-collapse="{target:'#do-not-say-2'}"></i>
+														</h3>
+													</header>
+													<div id="do-not-say-2" class="am-panel-collapse am-collapse am-in">
+														<div class="am-panel-bd">
+															<video id="example_video_1" class="video-js vjs-amazeui" controls preload="none" height="200" width="100%" poster="http://video-js.zencoder.com/oceans-clip.png" data-setup="{}">
+															  <source src="rtmp://player.daniulive.com:1935/vex" type='video/mp4' />
+															  <source src="http://video-js.zencoder.com/oceans-clip.webm" type='video/webm' />
+															  <source src="http://video-js.zencoder.com/oceans-clip.ogv" type='video/ogg' />
+															  <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+															</video>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+
+									<div class="am-form-group">
+										<label for="user-name" class="am-u-sm-2 am-form-label"> 选择文件<span class="tpl-form-line-small-title"> File</span></label>
+										<div class="am-u-sm-10">
+											<div class="am-form-group am-form-file">
+												<button type="button" class="am-btn am-btn-danger am-btn-sm">
+    											<i class="am-icon-cloud-upload"></i>选择要下载的ihex文件</button>&nbsp;&nbsp;&nbsp;<span id="file-list"></span>
+												<input id="file" type="file" name="file">
+												<label id="fileState"></label>
+											</div>
+
+										</div>
+									</div>
+
+									<div class="am-form-group">
+										<div class="am-u-sm-6 am-u-sm-push-2">
+											<button type="button" class="am-btn am-btn-primary" id="uploadIhex">下载</button>&nbsp;&nbsp;
+											<button type="button" class="am-btn am-btn-primary" id="clear">清空</button>&nbsp;&nbsp;
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<script src="../../../js/amazeui/amazeui.min.js"></script>
+		<script src="../../../js/amazeui/amazeui.datatables.min.js"></script>
+		<script src="../../../js/amazeui/dataTables.responsive.min.js"></script>
+		<script src="../../../js/amazeui/app.js"></script>
+		<script src="../../../js/video/video.js"></script>
+		<script src="../../../js/layer/layer.js"></script>
+		<script src="../../../js/common.js"></script>
+		<script>
+			videojs.options.flash.swf = "video.js/video-js.swf";
+			var token = getQueryVariable("token");
+			var formdata = new FormData(); //表单数据
+			//文件上传提示功能
+			$('#file').on('change', function() {
+				var str = $.getCheckBox();
+				if (str == "") {
+					layer.msg("请选择节点");
+					$(this).val('');//清除file属性
+					return;
+				}
+				if(formdata.get("node_number") != null){
+					formdata.append("node_number", "&"+str );
+				}else{
+					formdata.append("node_number", str );
+				}
+				//添加节点编号数据
+				formdata.append("files", this.files[0]); //添加文件
+				var f = this.files[0];
+				var fileNames = "节点" + str + ":" + f.name;
+				$('#file-list').append('<span class="am-badge">' + fileNames + '</span> ');
+				$(this).val('');//清除file属性
+				$("[name='node_number']").attr("checked",false);//复选框恢复
+			});
+			//清空数据
+			$('#clear').on('click', function() {
+				$.clear();
+			});
+			//初始话页面 查询节点信息 节点号
+			$(document).ready(function() {
+				$.ajax({
+					type: "get",
+					url: "/student/getMessage?token=" + token,
+					dataType: 'json',
+					success: function(res) {
+						$("#welcome").html(res.data.username);
+						var node_number = res.data.node_number.split(",");
+						$.each(node_number, function(i, e) {
+							$("input[type='checkbox']")[i].setAttribute("value", e);
+							$(".checkbox")[i].innerHTML= "节点"+e;
+						});
+					},
+					error: function() {}
+				});
+			});
+			//下载按钮触发此函数
+			$('#uploadIhex').on('click', function() {
+				//判断formdata是否为空
+				if (formdata == null) {
+					layer.msg("操作失败");
+				}
+				g_showLoading();
+				//上传文件ajax
+				$.ajax({
+					url: '/node/uploadIhex',
+					type: 'POST',
+					dataType: 'json',
+					data: formdata,
+					cache: false, //上传文件无需缓存
+					processData: false, //用于对data参数进行序列化处理 这里必须false
+					contentType: false, //必须
+					success: function(res) {
+						layer.closeAll();
+						$.clear();
+						layer.msg("下载成功");
+					},
+					error: function(res) {
+						layer.closeAll();
+					}
+				});
+			});
+			//清空formdata
+			$.clear = function() {
+				formdata = new FormData();
+				$('#file-list').html("");
+			}
+		</script>
+	</body>
+
+</html>

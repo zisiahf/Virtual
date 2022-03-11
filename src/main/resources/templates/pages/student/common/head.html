@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="header">
+    <!-- logo -->
+    <div class="am-fl tpl-header-logo">
+        <a href="javascript:;"><strong>物联网虚拟仿真实验平台</strong></a>
+    </div>
+    <!-- 右侧内容 -->
+    <div class="tpl-header-fluid">
+        <!-- 侧边切换 -->
+        <div class="am-fl tpl-header-switch-button am-icon-list">
+						<span>
+                	</span>
+        </div>
+        <!-- 其它功能-->
+        <div class="am-fr tpl-header-navbar">
+            <ul>
+                <!-- 欢迎语  用户名的设置来自data.js -->
+                <li class="am-text-sm tpl-header-navbar-welcome am-dropdown" data-am-dropdown>
+                    <a href="#" class="am-dropdown-toggle" data-am-dropdown-toggle>欢迎你,<span id="welcome"></span></a>
+                    <!-- 弹出列表 -->
+                    <ul class="am-dropdown-content tpl-dropdown-content">
+                        <li class="tpl-dropdown-menu-notifications">
+                            <a href="javascript:;" class="tpl-dropdown-menu-notifications-item am-cf">
+                                <div class="tpl-dropdown-menu-notifications-title">
+                                    <i class="am-icon-line-chart"></i>
+                                    <span>实验数据</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="tpl-dropdown-menu-notifications">
+                            <a href="javascript:;" class="tpl-dropdown-menu-notifications-item am-cf">
+                                <div class="tpl-dropdown-menu-notifications-title">
+                                    <i class="am-icon-folder-o"></i>
+                                    <span>实验指导书</span>
+                                </div>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- 退出 -->
+                <li class="am-text-sm">
+                    <a href="#">
+                        <span class="am-icon-sign-out"></span> 退出
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+</body>
+</html>
